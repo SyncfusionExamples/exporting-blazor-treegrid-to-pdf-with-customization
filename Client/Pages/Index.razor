@@ -1,0 +1,117 @@
+﻿@page "/"
+
+@using Syncfusion.Blazor.Grids
+
+<SfTreeGrid @ref="TreeGrid" DataSource="@TreeData" IdMapping="TaskId" ParentIdMapping="ParentId" TreeColumnIndex="1"
+            Toolbar="@(new List<string>() { "PdfExport" })"
+            AllowPdfExport="true">
+    <TreeGridEvents OnToolbarClick="ToolbarClickHandler" TValue="BusinessObject"></TreeGridEvents>
+    <TreeGridColumns>
+        <TreeGridColumn Field="TaskId" HeaderText="Task ID" TextAlign="TextAlign.Right"></TreeGridColumn>
+        <TreeGridColumn Field="TaskName" HeaderText="Task Name" Width="200"></TreeGridColumn>
+        <TreeGridColumn Field="StartDate" HeaderText="Start Date" Format="dd-MMM-yyyy"></TreeGridColumn>
+        <TreeGridColumn Field="Duration" HeaderText="Duration" TextAlign="TextAlign.Right"></TreeGridColumn>
+        <TreeGridColumn Field="Progress" HeaderText="Progress" TextAlign="TextAlign.Right"></TreeGridColumn>
+        <TreeGridColumn Field="Priority" HeaderText="Priority"></TreeGridColumn>
+    </TreeGridColumns>
+</SfTreeGrid>
+
+@code {
+    public List<BusinessObject> TreeData = new List<BusinessObject>();
+    SfTreeGrid<BusinessObject> TreeGrid;
+    public class BusinessObject
+    {
+        public int TaskId { get; set; }
+        public string TaskName { get; set; }
+        public int Duration { get; set; }
+        public DateTime? StartDate { get; set; }
+        public int Progress { get; set; }
+        public string Priority { get; set; }
+        public int? ParentId { get; set; }
+        public bool? Approved { get; set; }
+    }
+
+    public List<PdfHeaderFooterContent> HeaderContent = new List<PdfHeaderFooterContent>
+    {
+        new PdfHeaderFooterContent()
+        {
+            Type = ContentType.Text,
+            Value = "Time Tracking Report",
+            Position = new PdfPosition(){ X=0, Y=50},
+            Style = new PdfContentStyle(){TextBrushColor = "#000000", FontSize = 13}
+        }
+    };
+
+    public List<PdfHeaderFooterContent> FooterContent = new List<PdfHeaderFooterContent>()
+    {
+        new PdfHeaderFooterContent()
+        {
+            Type = ContentType.PageNumber,
+            PageNumberType = PdfPageNumberType.Numeric,
+            Position = new PdfPosition(){ X=350, Y=25},
+            Style = new PdfContentStyle(){TextBrushColor = "#0000ff", FontSize = 12, HAlign = PdfHorizontalAlign.Center}
+        }
+    };
+
+    public void ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
+    {
+        if (args.Item.Text == "PDF Export")
+        {
+            PdfExportProperties props = new PdfExportProperties();
+
+            PdfHeader Header = new PdfHeader()
+                {
+                    FromTop = 0,
+                    Height = 130,
+                    Contents = HeaderContent
+                };
+
+            PdfFooter Footer = new PdfFooter()
+                {
+                    FromBottom = 130,
+                    Height = 130,
+                    Contents = FooterContent
+                };
+
+            PdfTheme Theme = new PdfTheme();
+
+            PdfThemeStyle HeaderTheme = new PdfThemeStyle()
+                {
+                    FontColor = "Blue",
+                    FontName = "Calibri",
+                    FontSize = 14,
+                    Bold = true
+                };
+
+            Theme.Header = HeaderTheme;
+
+            PdfThemeStyle RecordTheme = new PdfThemeStyle()
+                {
+                    FontColor = "#64FA50",
+                    FontName = "Calibri",
+                    FontSize = 11
+                };
+
+            Theme.Record = RecordTheme;
+
+            props.FileName = "SummaryData.pdf";
+            props.Header = Header;
+            props.Footer = Footer;
+            props.Theme = Theme;
+            this.TreeGrid.PdfExport(props);
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        TreeData.Add(new BusinessObject() { TaskId = 1, TaskName = "Parent Task 1", Duration = 10, Progress = 70, ParentId = null, Priority = "High", StartDate = DateTime.Now.AddDays(-10), Approved = false });
+        TreeData.Add(new BusinessObject() { TaskId = 2, TaskName = "Child tsk 1", Duration = 4, Progress = 80, ParentId = 1, Priority = "Normal", StartDate = DateTime.Now.AddDays(-8), Approved = true, });
+        TreeData.Add(new BusinessObject() { TaskId = 3, TaskName = "Child Task 2", Duration = 5, Progress = 65, ParentId = 1, Priority = "Critical", StartDate = DateTime.Now.AddDays(-1), Approved = true, });
+        TreeData.Add(new BusinessObject() { TaskId = 4, TaskName = "Parent Task 2", Duration = 6, Progress = 77, ParentId = null, Priority = "Low", Approved = true, StartDate = DateTime.Now.AddDays(-20) });
+        TreeData.Add(new BusinessObject() { TaskId = 5, TaskName = "Child Task 5", Duration = 9, Progress = 25, ParentId = 4, Priority = "Normal", StartDate = DateTime.Now.AddDays(-7), Approved = false });
+        TreeData.Add(new BusinessObject() { TaskId = 6, TaskName = "Child Task 6", Duration = 9, Progress = 7, ParentId = 5, Priority = "Normal", StartDate = DateTime.Now.AddDays(-35), Approved = true, });
+        TreeData.Add(new BusinessObject() { TaskId = 7, TaskName = "Parént Task 3", Duration = 4, Progress = 45, ParentId = null, Priority = "High", StartDate = DateTime.Now.AddDays(-3), Approved = false });
+        TreeData.Add(new BusinessObject() { TaskId = 8, TaskName = "Child Task 7", Duration = 3, Progress = 38, ParentId = 7, Priority = "Critical", StartDate = DateTime.Now.AddDays(-1), Approved = true, });
+        TreeData.Add(new BusinessObject() { TaskId = 9, TaskName = "Child Task 8", Duration = 7, Progress = 70, ParentId = 7, Priority = "Low", StartDate = DateTime.Now.AddDays(-5), Approved = true, });
+    }
+}
