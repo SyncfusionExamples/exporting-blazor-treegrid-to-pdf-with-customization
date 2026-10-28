@@ -1,6 +1,7 @@
-﻿@page "/"
+@page "/"
 
 @using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.TreeGrid
 
 <SfTreeGrid @ref="TreeGrid" DataSource="@TreeData" IdMapping="TaskId" ParentIdMapping="ParentId" TreeColumnIndex="1"
             Toolbar="@(new List<string>() { "PdfExport" })"
@@ -18,15 +19,15 @@
 
 @code {
     public List<BusinessObject> TreeData = new List<BusinessObject>();
-    SfTreeGrid<BusinessObject> TreeGrid;
+    SfTreeGrid<BusinessObject> TreeGrid = default!;
     public class BusinessObject
     {
         public int TaskId { get; set; }
-        public string TaskName { get; set; }
+        public string TaskName { get; set; } = string.Empty;
         public int Duration { get; set; }
         public DateTime? StartDate { get; set; }
         public int Progress { get; set; }
-        public string Priority { get; set; }
+        public string Priority { get; set; } = string.Empty;
         public int? ParentId { get; set; }
         public bool? Approved { get; set; }
     }
@@ -53,7 +54,7 @@
         }
     };
 
-    public void ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
+    public async Task ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
     {
         if (args.Item.Text == "PDF Export")
         {
@@ -98,7 +99,7 @@
             props.Header = Header;
             props.Footer = Footer;
             props.Theme = Theme;
-            this.TreeGrid.PdfExport(props);
+            await this.TreeGrid.ExportToPdfAsync(props);
         }
     }
 
