@@ -21,7 +21,7 @@ A quick-start Blazor project that depicts how to perform PDF exporting in the Sy
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 
 
-## How to Run the Project
+## How to run the project
 
 **Visual Studio 2026**
 
